@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/index.css">
+<script>
+    function submitForm() {
+        document.getElementById("file-form").submit()
+        document.getElementById("geno-file").value = '';
+    }
+
+    // This is for the multiple choise of races
+    $('select').selectpicker();
+
+    function changeSelect() {
+        var select = document.getElementById('races');
+        var selected = [...select.options]
+                        .filter(option => option.selected)
+                        .map(option => option.value);
+        racesStr = ""
+        selected.forEach(race => {
+            racesStr += race + ";"
+        })
+
+        document.getElementById("raceStr").value = racesStr;
+    }
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+<br>
+<br>
+<div class="page-top">
+    <h1>Genotypes Imputation</h1>
+</div>
+<div class="form">
+    <div class="form-div">
+        <form action="/impute-file" method="post" enctype="multipart/form-data" id="file-form">
+        <div class="load-file-div">
+            <!-- <div class="form-group file-area">
+                <label for="images">Images <span>Your images should be at least 400x300 wide</span></label>
+                <input type="file" name="genofile" id="images" required="required"/>
+            <div class="file-dummy">
+                <div class="success">Great, your files are selected. Keep on.</div>
+                <div class="default">Please select some files</div>
+            </div>
+          </div> -->
+            <input type="file" name="genofile" id="geno-file" class="load-file" onchange="submitForm();">
+        </div>
+        </form>
+        <form action="/impute-form" method="post" enctype="multipart/form-data">
+        <input type="text" name="race" id="raceStr" hidden>
+        <div class="insert-no-file">
+            <div class="left-half race-table">
+                <label for="races">races: </label>
+                <select id="races" multiple class="selectpicker" data-live-search="true" onchange="changeSelect();">
+                    <option value="AAFA">AAFA</option>
+                    <option value="AFA">AFA</option>
+                    <option value="AFB">AFB</option>
+                    <option value="AINDI">AINDI</option>
+                    <option value="AISC">AISC</option>
+                    <option value="ALANAM">ALANAM</option>
+                    <option value="AMIND">AMIND</option>
+                    <option value="API">API</option>
+                    <option value="CARB">CARB</option>
+                    <option value="CARHIS">CARHIS</option>
+                    <option value="CARIBI">CARIBI</option>
+                    <option value="CAU">CAU</option>
+                    <option value="FILI">FILI</option>
+                    <option value="HAWI">HAWI</option>
+                    <option value="HIS">HIS</option>
+                    <option value="JAPI">JAPI</option>
+                    <option value="KORI">KORI</option>
+                    <option value="MENAFC">MENAFC</option>
+                    <option value="MSWHIS">MSWHIS</option>
+                    <option value="NAM">NAM</option>
+                    <option value="NAMER">EURCAU</option>
+                    <option value="NCHI">NCHI</option>
+                    <option value="SCAHIS">SCAHIS</option>
+                    <option value="SCAMB">SCAMB</option>
+                    <option value="SCSEAI">SCSEAI</option>
+                    <option value="VIET">VIET</option>
+                </select>
+            </div>
+            <div class="right-half" style="text-align: left;">
+                <!-- <label for="gentic_or_serology">Input format</label> -->
+                <input type="radio" name="gentic_or_serology" id="gentic_or_serology1" value="genetic" checked> Genetic
+                <br>
+                <input type="radio" name="gentic_or_serology" id="gentic_or_serology2" value="serology"> Serology
+                <!-- <div style="display: inline;">
+                    <select id="gentic_or_serology" name="gentic_or_serology">
+                        <option value="genetic" selected="selected">Genetic (default)</option>
+                        <option value="Serology">Serology</option>
+                    </select>
+                </div> -->
+            </div>
+            <br>
+            <br>
+            <div class="glstring">
+                <!-- Gl-string:  <br> -->
+                <input type="text" class="gl-string" name="glstring" placeholder="Gl-string">
+            </div>
+            <br>
+            <!-- Alleles seperatly: -->
+            <br>   
+            <table class="alleles-table">
+                <tr>
+                    <td>A1</td>
+                    <td><input type="text" id="A1" name="A1" class="hla-input"></td>
+                    <td>B1</td>
+                    <td><input type="text" id="B1" name="B1" class="hla-input"></td>
+                    <td>C1</td>
+                    <td><input type="text" id="C1" name="C1" class="hla-input"></td>
+                    <td>DRB11</td>
+                    <td><input type="text" id="DRB1" name="DRB1_1" class="hla-input"></td>
+                    <td>DQB11</td>
+                    <td><input type="text" id="DQB1" name="DQB1_1" class="hla-input"></td>
+                </tr>
+                <tr>
+                    <td>A2</td>
+                    <td><input type="text" id="A2" name="A2" class="hla-input"></td>
+                    <td>B2</td>
+                    <td><input type="text" id="B2" name="B2" class="hla-input"></td>
+                    <td>C2</td>
+                    <td><input type="text" id="C2" name="C2" class="hla-input"></td>
+                    <td>DRB12</td>
+                    <td><input type="text" id="DRB2" name="DRB1_2" class="hla-input"></td>
+                    <td>DQB12</td>
+                    <td><input type="text" id="DQB2" name="DQB1_2" class="hla-input"></td>
+                </tr>
+            </table>
+            <br>
+            <br>
+        </div>
+        <br>
+        <div class="form-bottom-div">
+            <!-- <label for="gentic_or_serology">Input format</label>
+            <select id="gentic_or_serology" name="gentic_or_serology" class="bottom-submit">
+                <option value="genetic" selected="selected">Genetic (default)</option>
+                <option value="Serology">Serology</option>
+            </select> -->
+            <br>
+            <button class="btn btn-primary" type="submit" class="bottom-submit">Submit form</button>
+            <!-- <button class="btn btn-primary" type="button" class="bottom-submit" onclick="printRaces()">Submit form</button> -->
+        </div> 
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/results.css">
+<link rel="stylesheet" href="/static/index.css">
+<script>
+    function seeTable(divId) {        
+        /*
+        document.getElementById("haplotypes").setAttribute('hidden', "");
+        document.getElementById("haplotypes-pairs").setAttribute('hidden', "");
+        document.getElementById("genotypes").setAttribute('hidden', "");
+
+        if(divId == "geno") {
+            document.getElementById("genotypes").removeAttribute('hidden');
+        } else if (divId == "hap-s") {
+            document.getElementById("haplotypes").removeAttribute('hidden');
+        } else {
+            document.getElementById("haplotypes-pairs").removeAttribute('hidden');
+        }
+        */
+        document.getElementById("haplotypes").style.display = "none";
+        document.getElementById("haplotypes-pairs").style.display = "none";
+        document.getElementById("genotypes").style.display = "none";
+
+        if(divId == "geno") {
+            document.getElementById("genotypes").style.display = "block";
+        } else if (divId == "hap-s") {
+            document.getElementById("haplotypes").style.display = "block";
+        } else {
+            document.getElementById("haplotypes-pairs").style.display = "block";
+        }
+    }
+</script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    function extractContent(s) {
+        var span = document.createElement('span');
+        span.innerHTML = s;
+        a = span.textContent || span.innerText;
+        a = a.replaceAll(" ", "")
+        a = a.replaceAll("\n", "")
+        return a;
+    };
+
+    function loadDataFromTable(table) {
+        arr = [];
+        for (var i = 0, row; row = table.rows[i]; i++) {
+            rowArr = []
+            for (var j = 0, col; col = row.cells[j]; j++) {
+                x = extractContent(col.innerHTML);
+                if (j != 0 && i != 0)
+                    rowArr.push(parseFloat(x));
+                else {
+                    rowArr.push(x)
+                }
+            }
+            arr.push(rowArr);
+        }
+        return arr;
+    }
+
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var options = {
+            title: "",
+            legend: { position: "none" },
+            backgroundColor: { fill:'transparent' },
+            height: 400,
+            hAxis: {
+                format: 'scientific'
+            },
+            vAxis: {
+                // format: 'scientific'
+            }
+        };
+
+        var genotype_table = loadDataFromTable(document.getElementById("genotype-data-table"));
+        var genotype_data = google.visualization.arrayToDataTable(genotype_table);
+        var genotype_view = new google.visualization.DataView(genotype_data);
+        var genotype_chart = new google.visualization.BarChart(document.getElementById("genotype-bars"));
+        genotype_chart.draw(genotype_view, options);
+
+        var genotype_table = loadDataFromTable(document.getElementById("haplotypes-pairs-data-table"));
+        var genotype_data = google.visualization.arrayToDataTable(genotype_table);
+        var genotype_view = new google.visualization.DataView(genotype_data);
+        var genotype_chart = new google.visualization.BarChart(document.getElementById("haplotypes-pairs-bars"));
+        genotype_chart.draw(genotype_view, options);
+        
+        seeTable('geno');
+    }
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div class="page-top">
+    <h1>Results</h1>
+    <h6>{{ glstring }}</h6>
+    <!-- <h6>{{ ard_string }}</h6> -->
+    <div class="middle-div">
+        <!-- ard hla: {{ ard_string }} <br>
+        race: {{ imputration_race }} <br> -->
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-info margin" onclick="seeTable('geno')">Genotypes</button>
+            <button type="button" class="btn btn-info margin" onclick="seeTable('hap-s')">Haplotypes (separate)</button>
+            <button type="button" class="btn btn-info margin" onclick="seeTable('hap-p')">Haplotypes (pairs)</button>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div style="display: none;">
+    <table id="genotype-data-table">
+        <tr>
+            <td>Genotype</td>
+            <td>Score</td>
+        </tr>
+        {% for gen in genotypes %}
+            <tr>
+                <td>{{ gen[1] }}</td>
+                <td>{{ gen[2] }}</td>
+            </tr>
+        {% endfor %}   
+    </table>
+    <table id="haplotypes-pairs-data-table">
+        <tr>
+            <td>haplotypes</td>
+            <td>Score</td>
+        </tr>
+        {% for haps in haplotypes_pairs %}
+            <tr>
+                <td>{{ haps[1] }}, {{ haps[2] }}</td>
+                <!-- <td>{{ haps[1] }}</td> -->
+                <td>{{ haps[3] }}</td>
+            </tr>
+        {% endfor %}   
+    </table>
+</div>
+
+<div class="main-results">
+    <div class="results-div" id="haplotypes" style="display: none;">
+        <table class="table results-table table-striped">
+            <tr>
+                <th>Haplotype</th>
+                {% for race in races %}
+                    <th>{{ race }}</th>
+                {% endfor %}
+            </tr>
+            {% for hap in haplotypes %}
+            <tr>
+                <td>{{ hap }}</td>
+                {% for race in races %}
+                    {% if race in haplotypes[hap] %}
+                        <td>{{ haplotypes[hap][race] }}</td>
+                    {% else %}
+                        <td>0</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>    
+            {% endfor %}
+        </table>
+    </div>
+    
+    <div class="results-div" id="haplotypes-pairs">
+        <br>
+        <div id="haplotypes-pairs-bars" class="bars-div"></div>
+        <br>
+        <table class="table results-table table-striped">
+            <tr>
+                <th></th>
+                <th>Haplotype 1</th>
+                <th>Haplotype 2</th>
+                <th>Score</th>
+            </tr>
+            {% for pair in haplotypes_pairs %}
+            <tr>
+                <td>{{ pair[0] }}</td>
+                <td>{{ pair[1] }}</td>
+                <td>{{ pair[2] }}</td>
+                <td>{{ pair[3] }}</td>
+            </tr>    
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="results-div" id="genotypes">
+        <br>
+        <div id="genotype-bars" class="bars-div"></div>
+        <br>
+        <table class="table results-table table-striped">
+            <tr>
+                <th></th>
+                <th>Genotype</th>
+                <th>Score</th>
+            </tr>
+            {% for gen in genotypes %}
+            <tr>
+                <td>{{ gen[0] }}</td>
+                <td>{{ gen[1] }}</td>
+                <td>{{ gen[2] }}</td>
+            </tr>    
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}
