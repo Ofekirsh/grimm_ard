@@ -44,7 +44,14 @@ cast = {
     "DQB1_2": "DQB1",
     "DRB1_1": "DRB1",
     "DRB1_2": "DRB1",
+    "DRB3_1": "DRB3",
+    "DRB3_2": "DRB3",
+    "DRB4_1": "DRB4",
+    "DRB4_2": "DRB4",
+    "DRB5_1": "DRB5",
+    "DRB5_2": "DRB5"
 }
+
 
 def apply_ard_on_file(path):
     """
@@ -70,7 +77,7 @@ def apply_ard_on_file(path):
         except Exception as e:
             # raise Exception("Input file format wrong.", str(e))
             raise Exception(str(e))
-    
+
     with open(path, "w") as f:
         f.writelines(new_lines)
 
@@ -97,6 +104,7 @@ def get_allele_type(allele: str):
         return "DQB"
     return None
 
+
 def convert_allele_val(allele: str, val: str, is_genetic=True):
     """
         Converts the given allele and its value to the appropriate format for use in building a GL string.
@@ -110,13 +118,14 @@ def convert_allele_val(allele: str, val: str, is_genetic=True):
         tuple[str, bool]: A tuple containing the converted string and a boolean indicating whether the conversion was successful.
         """
     if not val or not allele:
-        return "", False 
+        return "", False
     if ":" in val:
         return f"{allele}*{val}"
     if is_genetic:
         return f"{allele}*{val}:XX"
-    
-    return f"{allele}{val}" # serology
+
+    return f"{allele}{val}"  # serology
+
 
 def build_glstring(alleles):
     """
@@ -135,15 +144,16 @@ def build_glstring(alleles):
             alleles_by_type[atype].append(allele)
         else:
             alleles_by_type[atype] = [allele]
-    
+
     for atype, lst in alleles_by_type.items():
-        # If there is only one allele from a locuse, duplicate it. 
+        # If there is only one allele from a locuse, duplicate it.
         if len(lst) == 1:
             lst = [lst[0], lst[0]]
 
         alleles_by_type[atype] = '+'.join(lst)
 
     return '^'.join(alleles_by_type.values())
+
 
 def apply_ard(alleles: dict, is_genetic: bool):
     """
@@ -160,10 +170,12 @@ def apply_ard(alleles: dict, is_genetic: bool):
     if "glstring" in alleles and alleles["glstring"]:
         my_all_alleles = alleles["glstring"].replace("^", "+").split("+")
     else:
-        my_all_alleles = [convert_allele_val(cast.get(allele, None), val, is_genetic) for allele, val in alleles.items() if allele in cast and val]
+        my_all_alleles = [convert_allele_val(cast.get(allele, None), val, is_genetic) for allele, val in alleles.items()
+                          if allele in cast and val]
 
     glstring = build_glstring(my_all_alleles)
     return glstring, ard.redux(glstring, 'lgx')
+
 
 def get_random_number():
     """
@@ -173,11 +185,12 @@ def get_random_number():
         int: The random number.
         """
     while True:
-            num = random.randint(0, 10000)
-            file_path = os.path.join(INPUT_DIR, TO_INPUT_FILE(num))
-            if not os.path.exists(file_path):
-                return num
-            
+        num = random.randint(0, 10000)
+        file_path = os.path.join(INPUT_DIR, TO_INPUT_FILE(num))
+        if not os.path.exists(file_path):
+            return num
+
+
 def string_to_file(ard_string, race1="UNK", race2="UNK"):
     """
         Writes the given ARD string to a file with a random name and returns the name.
@@ -198,8 +211,9 @@ def string_to_file(ard_string, race1="UNK", race2="UNK"):
         if not os.path.exists(file_path):
             with open(file_path, "w") as f:
                 f.write(line)
-        
+
             return num
+
 
 def apply_grim_file(file):
     """
@@ -220,10 +234,11 @@ def apply_grim_file(file):
     genotype_path = os.path.join(OUTPUT_DIR, TO_GENOTYPE_FILE(num))
 
     run_impute(PATH_TO_CONFIG, grim_graph, input_path,
-                output_haplotype_path=haplotype_path, output_genotype_path=genotype_path)
+               output_haplotype_path=haplotype_path, output_genotype_path=genotype_path)
     os.remove(input_path)
 
     return genotype_path, haplotype_path
+
 
 def apply_grim(alleles: dict, race, is_genetic=True):
     """
@@ -244,9 +259,9 @@ def apply_grim(alleles: dict, race, is_genetic=True):
     haplotype_path = os.path.join(OUTPUT_DIR, TO_HAPLOTYPE_FILE(num))
     genotype_path = os.path.join(OUTPUT_DIR, TO_GENOTYPE_FILE(num))
 
-    # Apply grim here   
+    # Apply grim here
     run_impute(PATH_TO_CONFIG, grim_graph, input_path,
-                output_haplotype_path=haplotype_path, output_genotype_path=genotype_path)
+               output_haplotype_path=haplotype_path, output_genotype_path=genotype_path)
     os.remove(input_path)
 
     genotypes = read_genos(genotype_path)
@@ -279,11 +294,20 @@ def read_genos(path):
         lines = f.readlines()
         for line in lines:
             _, hla, prob, index = line.split(",")
-            hlas_and_probs.append((index, hla, f"{float(prob):0.2e}"))
+            hlas_and_probs.append([index, hla, f"{float(prob):0.2e}"])
             # hlas_and_probs[hla] = f"{float(prob):0.2e}"
+
+    probs = [float(prob[2]) for prob in hlas_and_probs]
+    min_prob = min(probs)
+    max_prob = max(probs)
+
+    for i, prob in enumerate(probs):
+        normalized = (prob - min_prob) / (max_prob - min_prob)
+        hlas_and_probs[i].append(f"{normalized:.3f}")
 
     # os.remove(path)
     return hlas_and_probs
+
 
 def read_haps(path):
     """
@@ -317,14 +341,13 @@ def read_haps(path):
             hla1, hla2 = hla.split("+")
             hlas.add(hla1)
             hlas.add(hla2)
-            hla_pairs.append((index, hla1, hla2, f"{float(prob):0.2e}"))
+            hla_pairs.append([index, hla1, hla2, f"{float(prob):0.2e}"])
 
     for hla in hlas:
         hla_and_probs[hla] = {}
         for race, dict_ in all_freqs.items():
-            if hla in dict_: 
+            if hla in dict_:
                 hla_and_probs[hla][race] = f"{dict_[hla]:0.2e}"
 
     # os.remove(path)
     return hla_and_probs, hla_pairs
-

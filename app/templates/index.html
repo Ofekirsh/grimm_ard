@@ -29,6 +29,15 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .insert-no-file {
+        height: 500px;
+    }
+    .load-file-div {
+        height: 500px;
+    }
+</style>
+
 <br>
 <br>
 <div class="page-top">
@@ -83,18 +92,6 @@
                     <option value="VIET">VIET</option>
                 </select>
             </div>
-            <div class="right-half" style="text-align: left;">
-                <!-- <label for="gentic_or_serology">Input format</label> -->
-                <input type="radio" name="gentic_or_serology" id="gentic_or_serology1" value="genetic" checked> Genetic
-                <br>
-                <input type="radio" name="gentic_or_serology" id="gentic_or_serology2" value="serology"> Serology
-                <!-- <div style="display: inline;">
-                    <select id="gentic_or_serology" name="gentic_or_serology">
-                        <option value="genetic" selected="selected">Genetic (default)</option>
-                        <option value="Serology">Serology</option>
-                    </select>
-                </div> -->
-            </div>
             <br>
             <br>
             <div class="glstring">
@@ -107,30 +104,47 @@
             <table class="alleles-table">
                 <tr>
                     <td>A1</td>
-                    <td><input type="text" id="A1" name="A1" class="hla-input"></td>
+                    <td><input type="text" id="A1" name="A1" tabindex="1" class="hla-input"></td>
                     <td>B1</td>
-                    <td><input type="text" id="B1" name="B1" class="hla-input"></td>
+                    <td><input type="text" id="B1" name="B1" tabindex="3" class="hla-input"></td>
                     <td>C1</td>
-                    <td><input type="text" id="C1" name="C1" class="hla-input"></td>
-                    <td>DRB11</td>
-                    <td><input type="text" id="DRB1" name="DRB1_1" class="hla-input"></td>
-                    <td>DQB11</td>
-                    <td><input type="text" id="DQB1" name="DQB1_1" class="hla-input"></td>
+                    <td><input type="text" id="C1" name="C1" tabindex="5" class="hla-input"></td>
+                    <td>DRB1</td>
+                    <td><input type="text" id="DRB1" name="DRB1_1" tabindex="7" class="hla-input"></td>
                 </tr>
                 <tr>
                     <td>A2</td>
-                    <td><input type="text" id="A2" name="A2" class="hla-input"></td>
+                    <td><input type="text" id="A2" name="A2" tabindex="2" class="hla-input"></td>
                     <td>B2</td>
-                    <td><input type="text" id="B2" name="B2" class="hla-input"></td>
+                    <td><input type="text" id="B2" name="B2" tabindex="4"class="hla-input"></td>
                     <td>C2</td>
-                    <td><input type="text" id="C2" name="C2" class="hla-input"></td>
-                    <td>DRB12</td>
-                    <td><input type="text" id="DRB2" name="DRB1_2" class="hla-input"></td>
-                    <td>DQB12</td>
-                    <td><input type="text" id="DQB2" name="DQB1_2" class="hla-input"></td>
+                    <td><input type="text" id="C2" name="C2" tabindex="6" class="hla-input"></td>
+                    <td>DRB1</td>
+                    <td><input type="text" id="DRB2" name="DRB1_2" tabindex="8" class="hla-input"></td>
+                </tr>
+                <tr>
+                    <td>DQB1</td>
+                    <td><input type="text"  name="DQB1_1" tabindex="9" class="hla-input"></td>
+                    <td>DRB3</td>
+                    <td><input type="text"  name="DRB3_1" tabindex="11" class="hla-input"></td>
+                    <td>DRB4</td>
+                    <td><input type="text" name="DRB4_1" tabindex="13" class="hla-input"></td>
+                    <td>DRB5</td>
+                    <td><input type="text" name="DRB5_1" tabindex="15" class="hla-input"></td>
+                </tr>
+                <tr>
+                    <td>DQB1</td>
+                    <td><input type="text" id="DQB2" name="DQB1_2" tabindex="10" class="hla-input"></td>
+                    <td>DRB3</td>
+                    <td><input type="text" name="DRB3_2" tabindex="12" class="hla-input"></td>
+                    <td>DRB4</td>
+                    <td><input type="text" name="DRB4_2" tabindex="14" class="hla-input"></td>
+                    <td>DRB5</td>
+                    <td><input type="text" name="DRB5_2" tabindex="16" class="hla-input"></td>
                 </tr>
             </table>
             <br>
+            <button class="btn btn-primary" type="submit" tabindex="17" class="bottom-submit">Submit form</button>
             <br>
         </div>
         <br>
@@ -141,9 +155,10 @@
                 <option value="Serology">Serology</option>
             </select> -->
             <br>
-            <button class="btn btn-primary" type="submit" class="bottom-submit">Submit form</button>
+
             <!-- <button class="btn btn-primary" type="button" class="bottom-submit" onclick="printRaces()">Submit form</button> -->
-        </div> 
+        </div>
     </form>
 </div>
 {% endblock %}
+</div>

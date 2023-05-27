@@ -22,6 +22,16 @@
     <link rel="stylesheet" href="static/home.css">
     <meta charset="UTF-8">
     <title>Home Page</title>
+
+
+    <style>
+        #table_split {
+            width: 100%;
+            table-layout: fixed;
+            white-space: nowrap;
+            margin: 0.1rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -95,23 +105,22 @@
                     <input type="text" id="gl_string" name="glstring" style="width: 800px;margin-left: 20px">
                 </div>
                 <div class="two">
-                    <div class="three" id="con2" style="background-color: #9a9aa1">
+                    <div class="three" id="con2" style="background-color: #9a9aa1; overflow-x:auto">
                         <p id="expla_split" style="margin-left: 20px"><b>Insert separately:</b></p>
 
-                        <table class="table table-borderless" id="table_split"
-                               style="width: 250px;position:relative;left: 3%; background-color: #b2b2b9">
+                        <table class="table table-borderless" id="table_split">
                             <tbody>
                             <tr>
                                 <td>A1</td>
-                                <td><input type="text" id="A1" name="A1" style="width:60px" disabled="true"></td>
+                                <td><input type="text" id="K1" name="K1" style="width:60px" tabindex="1" disabled="true"></td>
                                 <td>B1</td>
-                                <td><input type="text" id="B1" name="B1" style="width:60px" disabled="true"></td>
+                                <td><input type="text" id="B1" name="B1" style="width:60px" tabindex="2" disabled="true"></td>
                                 <td>C1</td>
-                                <td><input type="text" id="C1" name="C1" style="width:60px" disabled="true"></td>
+                                <td><input type="text" id="C1" name="C1" style="width:60px" tabindex="3" disabled="true"></td>
                                 <td>DRB11</td>
-                                <td><input type="text" id="DRB1" name="DRB1_1" style="width:60px" disabled="true"></td>
+                                <td><input type="text" id="DRB1" name="DRB1_1" style="width:60px" tabindex="4" disabled="true"></td>
                                 <td>DQB11</td>
-                                <td><input type="text" id="DQB1" name="DQB1_1" style="width:60px" disabled="true"></td>
+                                <td><input type="text" id="DQB1" name="DQB1_1" style="width:60px" tabindex="5" disabled="true"></td>
                             </tr>
                             <tr>
                                 <td>A2</td>
@@ -210,7 +219,7 @@
                     </button>
                 </div>
                 <div class="race_cont2" style="margin-right: 30px">
-                    <div class="scroll_races"</div>
+                    <div class="scroll_races"></div>
                 </div>
 
             </div>

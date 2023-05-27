@@ -61,33 +61,47 @@
     }
 
     google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-        var options = {
-            title: "",
-            legend: { position: "none" },
-            backgroundColor: { fill:'transparent' },
-            height: 400,
-            hAxis: {
-                format: 'scientific'
-            },
-            vAxis: {
-                // format: 'scientific'
+    google.charts.setOnLoadCallback(drawCharts);
+    function drawCharts() {
+
+        /*
+        The data of the genotypes is already sorted in decreasing order therefore the first element in the visual
+        table is also the first element in the table below.
+        The code here just replaces the data with their corresponding number using and iterator.
+        */
+
+        const drawBarGraph = () => {
+            // The following options object will make it so that the table is drawn with 1 being the value at the
+            // top, and it will make it so that each value gets represented by showing all 10 ticks marks.
+            const options = {
+                title: "",
+                legend: { position: "none" },
+                backgroundColor: { fill:'transparent' },
+                height: 400,
+                hAxis: {
+                    format: 'scientific',
+                },
+                vAxis: {
+                    direction: -1,
+                    ticks: [],
+                },
             }
+
+            const genotype_table = loadDataFromTable(document.getElementById("genotype-data-table"));
+            // Convert the data glstrings into 1 through 10 as the table is already sorted from highest to lowest.
+            for (let i = 1; i < Math.min(11, genotype_table.length); i++) {
+                genotype_table[i][0] = i;
+                options.vAxis.ticks.push(i);
+            }
+            const genotype_data = google.visualization.arrayToDataTable(genotype_table);
+            const genotype_view = new google.visualization.DataView(genotype_data);
+            const genotype_chart = new google.visualization.BarChart(document.getElementById("genotype-bars"));
+            genotype_chart.draw(genotype_view, options);
         };
 
-        var genotype_table = loadDataFromTable(document.getElementById("genotype-data-table"));
-        var genotype_data = google.visualization.arrayToDataTable(genotype_table);
-        var genotype_view = new google.visualization.DataView(genotype_data);
-        var genotype_chart = new google.visualization.BarChart(document.getElementById("genotype-bars"));
-        genotype_chart.draw(genotype_view, options);
+        // Generates the first table.
+        drawBarGraph();
 
-        var genotype_table = loadDataFromTable(document.getElementById("haplotypes-pairs-data-table"));
-        var genotype_data = google.visualization.arrayToDataTable(genotype_table);
-        var genotype_view = new google.visualization.DataView(genotype_data);
-        var genotype_chart = new google.visualization.BarChart(document.getElementById("haplotypes-pairs-bars"));
-        genotype_chart.draw(genotype_view, options);
-        
         seeTable('geno');
     }
 </script>
@@ -116,14 +130,14 @@
     <table id="genotype-data-table">
         <tr>
             <td>Genotype</td>
-            <td>Score</td>
+            <td>Genotype Frequency</td>
         </tr>
         {% for gen in genotypes %}
             <tr>
                 <td>{{ gen[1] }}</td>
                 <td>{{ gen[2] }}</td>
             </tr>
-        {% endfor %}   
+        {% endfor %}
     </table>
     <table id="haplotypes-pairs-data-table">
         <tr>
@@ -136,7 +150,7 @@
                 <!-- <td>{{ haps[1] }}</td> -->
                 <td>{{ haps[3] }}</td>
             </tr>
-        {% endfor %}   
+        {% endfor %}
     </table>
 </div>
 
@@ -159,11 +173,11 @@
                         <td>0</td>
                     {% endif %}
                 {% endfor %}
-            </tr>    
+            </tr>
             {% endfor %}
         </table>
     </div>
-    
+
     <div class="results-div" id="haplotypes-pairs">
         <br>
         <div id="haplotypes-pairs-bars" class="bars-div"></div>
@@ -181,7 +195,7 @@
                 <td>{{ pair[1] }}</td>
                 <td>{{ pair[2] }}</td>
                 <td>{{ pair[3] }}</td>
-            </tr>    
+            </tr>
             {% endfor %}
         </table>
     </div>
@@ -194,14 +208,16 @@
             <tr>
                 <th></th>
                 <th>Genotype</th>
-                <th>Score</th>
+                <th>Genotype Frequency</th>
+                <th>Normalized</th>
             </tr>
             {% for gen in genotypes %}
             <tr>
-                <td>{{ gen[0] }}</td>
+                <td>{{ gen[0]|int + 1 }}</td>
                 <td>{{ gen[1] }}</td>
                 <td>{{ gen[2] }}</td>
-            </tr>    
+                <td>{{ gen[3] }}</td>
+            </tr>
             {% endfor %}
         </table>
     </div>
