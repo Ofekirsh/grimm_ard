@@ -300,9 +300,11 @@ def read_genos(path):
     probs = [float(prob[2]) for prob in hlas_and_probs]
     min_prob = min(probs)
     max_prob = max(probs)
+    sum_probs = sum(probs)
 
     for i, prob in enumerate(probs):
-        normalized = (prob - min_prob) / (max_prob - min_prob)
+        normalized = prob / sum_probs
+        #normalized = (prob - min_prob) / (max_prob - min_prob)
         hlas_and_probs[i].append(f"{normalized:.3f}")
 
     # os.remove(path)
@@ -345,9 +347,11 @@ def read_haps(path):
 
     haplos = [float(hap[3]) for hap in hla_pairs];
     min_hap, max_hap = min(haplos), max(haplos)
+    sum_haplos = sum(haplos)
 
     for i, prob in enumerate(haplos):
-        normalized = (prob - min_hap) / (max_hap - min_hap)
+        normalized = prob / sum_haplos
+        #normalized = (prob - min_hap) / (max_hap - min_hap)
         hla_pairs[i].append(f"{normalized:.3f}")
 
     for hla in hlas:
