@@ -70,7 +70,7 @@
         The code here just replaces the data with their corresponding number using and iterator.
         */
 
-        const drawBarGraph = () => {
+        const drawBarGraph = (tableName, tableBars) => {
             // The following options object will make it so that the table is drawn with 1 being the value at the
             // top, and it will make it so that each value gets represented by showing all 10 ticks marks.
             const options = {
@@ -87,7 +87,7 @@
                 },
             }
 
-            const genotype_table = loadDataFromTable(document.getElementById("genotype-data-table"));
+            const genotype_table = loadDataFromTable(document.getElementById(tableName));
             // Convert the data glstrings into 1 through 10 as the table is already sorted from highest to lowest.
             for (let i = 1; i < Math.min(11, genotype_table.length); i++) {
                 genotype_table[i][0] = i;
@@ -95,14 +95,16 @@
             }
             const genotype_data = google.visualization.arrayToDataTable(genotype_table);
             const genotype_view = new google.visualization.DataView(genotype_data);
-            const genotype_chart = new google.visualization.BarChart(document.getElementById("genotype-bars"));
+            const genotype_chart = new google.visualization.BarChart(document.getElementById(tableBars));
             genotype_chart.draw(genotype_view, options);
         };
 
         // Generates the first table.
-        drawBarGraph();
+        drawBarGraph("genotype-data-table", "genotype-bars");
+        drawBarGraph("haplotypes-pairs-data-table", "haplotypes-pairs-bars");
 
         seeTable('geno');
+        seeTable('hap-p');
     }
 </script>
 
@@ -158,6 +160,7 @@
     <div class="results-div" id="haplotypes" style="display: none;">
         <table class="table results-table table-striped">
             <tr>
+                <th></th>
                 <th>Haplotype</th>
                 {% for race in races %}
                     <th>{{ race }}</th>
@@ -165,6 +168,7 @@
             </tr>
             {% for hap in haplotypes %}
             <tr>
+                <td>{{ loop.index }}</td>
                 <td>{{ hap }}</td>
                 {% for race in races %}
                     {% if race in haplotypes[hap] %}
@@ -187,14 +191,16 @@
                 <th></th>
                 <th>Haplotype 1</th>
                 <th>Haplotype 2</th>
-                <th>Score</th>
+                <th>Genotype Frequency</th>
+                <th>Normalized</th>
             </tr>
             {% for pair in haplotypes_pairs %}
             <tr>
-                <td>{{ pair[0] }}</td>
+                <td>{{ pair[0] | int +1 }}</td>
                 <td>{{ pair[1] }}</td>
                 <td>{{ pair[2] }}</td>
                 <td>{{ pair[3] }}</td>
+                <td>{{ pair[4] }}</td>
             </tr>
             {% endfor %}
         </table>

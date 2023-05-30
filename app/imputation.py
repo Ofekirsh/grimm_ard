@@ -343,6 +343,13 @@ def read_haps(path):
             hlas.add(hla2)
             hla_pairs.append([index, hla1, hla2, f"{float(prob):0.2e}"])
 
+    haplos = [float(hap[3]) for hap in hla_pairs];
+    min_hap, max_hap = min(haplos), max(haplos)
+
+    for i, prob in enumerate(haplos):
+        normalized = (prob - min_hap) / (max_hap - min_hap)
+        hla_pairs[i].append(f"{normalized:.3f}")
+
     for hla in hlas:
         hla_and_probs[hla] = {}
         for race, dict_ in all_freqs.items():
