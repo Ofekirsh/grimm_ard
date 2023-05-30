@@ -51,7 +51,6 @@ def impute_file():
         return render_template("error.html", active="", error=str(e))
 
 
-# create a route for handling form submission and imputation, with the HTTP method POST
 @app.route('/impute-form', methods=['POST'])
 def impute_form():
     try:
@@ -59,15 +58,20 @@ def impute_form():
         race = request.form.get("race", "UNK;")[:-1]
         race_list = race.split(";")
 
-        a_race = request.form.get("A1", None)
-        if a_race == "":
-            a_race = request.form.get("A2", None)
-        if a_race == "":
-            raise Exception("Invalid format: must fill either one of the A's")
+        form_dict = request.form.to_dict()
+
+        a_race = ""
+        if not ("glstring" in form_dict and form_dict["glstring"]):
+            a_race = request.form.get("A1", None)
+            if a_race == "":
+                a_race = request.form.get("A2", None)
+            if a_race == "":
+                raise Exception("Invalid format: must fill either one of the A's")
+
         is_genetic = a_race == "01"
 
         # apply the GRIM algorithm to the input data
-        genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(request.form.to_dict(), race,
+        genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(form_dict, race,
                                                                                    is_genetic=is_genetic)
 
         # render a template with the imputation results
@@ -75,11 +79,40 @@ def impute_form():
                                haplotypes=haplotypes, genotypes=genotypes, races=race_list,
                                ard_string=ard_string, glstring=glstring, imputation_race=race,
                                haplotypes_pairs=haplotypes_pairs)
-
-    # render an error template if an exception occurs
+    #render an error template if an exception occurs
     except Exception as e:
         traceback.print_exc()
         return render_template("error.html", active="", error=str(e))
+
+# create a route for handling form submission and imputation, with the HTTP method POST
+# @app.route('/impute-form', methods=['POST'])
+# def impute_form():
+#     try:
+#         # get the input data from the form
+#         race = request.form.get("race", "UNK;")[:-1]
+#         race_list = race.split(";")
+#
+#         a_race = request.form.get("A1", None)
+#         if a_race == "":
+#             a_race = request.form.get("A2", None)
+#         if a_race == "":
+#             raise Exception("Invalid format: must fill either one of the A's")
+#         is_genetic = a_race == "01"
+#
+#         # apply the GRIM algorithm to the input data
+#         genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(request.form.to_dict(), race,
+#                                                                                    is_genetic=is_genetic)
+#
+#         # render a template with the imputation results
+#         return render_template("results.html", active="Home",
+#                                haplotypes=haplotypes, genotypes=genotypes, races=race_list,
+#                                ard_string=ard_string, glstring=glstring, imputation_race=race,
+#                                haplotypes_pairs=haplotypes_pairs)
+#
+#     # render an error template if an exception occurs
+#     except Exception as e:
+#         traceback.print_exc()
+#         return render_template("error.html", active="", error=str(e))
 
 
 @app.route('/impute', methods=['GET'])

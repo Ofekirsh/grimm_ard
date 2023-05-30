@@ -16,6 +16,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="kirsheo1@peptibase7.cs.biu.ac.il:22 password (11)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="kirsheo1@peptibase7.cs.biu.ac.il:22 password (2)">
         <serverdata>
           <mappings>
