@@ -11,17 +11,17 @@
     // This is for the multiple choise of races
     $('select').selectpicker();
 
-    function changeSelect() {
-        var select = document.getElementById('races');
-        var selected = [...select.options]
+    function changeSelect(elemId, strId) {
+        const select = document.getElementById(elemId);
+        const selected = [...select.options]
                         .filter(option => option.selected)
                         .map(option => option.value);
-        racesStr = ""
+        let outputStr = ""
         selected.forEach(race => {
-            racesStr += race + ";"
+            outputStr += race + ";"
         })
 
-        document.getElementById("raceStr").value = racesStr;
+        document.getElementById(strId).value = outputStr;
     }
 
 </script>
@@ -30,12 +30,7 @@
 
 {% block content %}
 <style>
-    .insert-no-file {
-        height: 500px;
-    }
-    .load-file-div {
-        height: 500px;
-    }
+
 </style>
 
 <br>
@@ -59,37 +54,58 @@
         </div>
         </form>
         <form action="/impute-form" method="post" enctype="multipart/form-data">
-        <input type="text" name="race" id="raceStr" hidden>
+            <input type="text" name="luci" id="luciStr" hidden>
+            <input type="text" name="race" id="raceStr" hidden>
         <div class="insert-no-file">
+
+            <div class="left-half race-table">
+                <label for="output-luci">output loci: </label>
+                <select id="output-luci" multiple class="selectpicker" onchange="changeSelect('output-luci', 'luciStr');">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="DRB1">DRB1</option>
+                    <option value="DQB1">DQB1</option>
+                    <option value="DRB3">DRB3</option>
+                    <option value="DRB4">DRB4</option>
+                    <option value="DRB5">DRB5</option>
+                </select>
+            </div>
+
             <div class="left-half race-table">
                 <label for="races">races: </label>
-                <select id="races" multiple class="selectpicker" data-live-search="true" onchange="changeSelect();">
-                    <option value="AAFA">AAFA</option>
-                    <option value="AFA">AFA</option>
-                    <option value="AFB">AFB</option>
-                    <option value="AINDI">AINDI</option>
+                <select id="races" multiple class="selectpicker" data-live-search="true" onchange="changeSelect('races', 'raceStr');">
+                    <optgroup label="AFA - African American">
+                        <option value="AAFA">AAFA</option>
+                        <option value="AFB">AFB</option>
+                        <option value="CARB">CARB</option>
+                    </optgroup>
+                    <optgroup label="CAU - Caucasian">
+                        <option value="MENAFC">MENAFC</option>
+                        <option value="NAMER">EURCAU</option>
+                    </optgroup>
+                    <optgroup label="API - Asian or Pacific Islander">
+                        <option value="AINDI">AINDI</option>
+                        <option value="FILI">FILI</option>
+                        <option value="HAWI">HAWI</option>
+                        <option value="JAPI">JAPI</option>
+                        <option value="KORI">KORI</option>
+                        <option value="NCHI">NCHI</option>
+                        <option value="SCSEAI">SCSEAI</option>
+                        <option value="VIET">VIET</option>
+                    </optgroup>
+                    <optgroup label="HIS - Hispanic">
+                        <option value="CARHIS">CARHIS</option>
+                        <option value="MSWHIS">MSWHIS</option>
+                        <option value="SCAHIS">SCAHIS</option>
+                    </optgroup>
+                    <optgroup label="NAM - Native AMerican">
+                        <option value="AMIND">AMIND</option>
+                        <option value="CARIBI">CARIBI</option>
+                    </optgroup>
                     <option value="AISC">AISC</option>
                     <option value="ALANAM">ALANAM</option>
-                    <option value="AMIND">AMIND</option>
-                    <option value="API">API</option>
-                    <option value="CARB">CARB</option>
-                    <option value="CARHIS">CARHIS</option>
-                    <option value="CARIBI">CARIBI</option>
-                    <option value="CAU">CAU</option>
-                    <option value="FILI">FILI</option>
-                    <option value="HAWI">HAWI</option>
-                    <option value="HIS">HIS</option>
-                    <option value="JAPI">JAPI</option>
-                    <option value="KORI">KORI</option>
-                    <option value="MENAFC">MENAFC</option>
-                    <option value="MSWHIS">MSWHIS</option>
-                    <option value="NAM">NAM</option>
-                    <option value="NAMER">EURCAU</option>
-                    <option value="NCHI">NCHI</option>
-                    <option value="SCAHIS">SCAHIS</option>
                     <option value="SCAMB">SCAMB</option>
-                    <option value="SCSEAI">SCSEAI</option>
-                    <option value="VIET">VIET</option>
                 </select>
             </div>
             <br>

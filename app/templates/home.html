@@ -181,13 +181,16 @@
                     Optional: After insertion, you can add races of this family . For more details see "Races".
                     <!--                    <label for="races">Choose a race:</label>-->
                     <select id="races" name="races" style="margin-left: 20px">
-                        <option value="AAFA">AAFA (US)</option>
-                        <option value="AFB">AFB (US)</option>
+                        <optgroup label="AFA - African American">
+                            <option value="AAFA">AAFA (US)</option>
+                            <option value="AFB">AFB (US)</option>
+                            <option value="CARB">CARB (US)</option>
+                        </optgroup>
                         <option value="AINDI">AINDI (US)</option>
                         <option value="AISC">AISC (US)</option>
                         <option value="ALANAM">ALANAM (US)</option>
                         <option value="AMIND">AMIND (US)</option>
-                        <option value="CARB">CARB (US)</option>
+
                         <option value="CARHIS">CARHIS (US)</option>
                         <option value="CARIBI">CARIBI (US)</option>
                         <option value="HAWI">HAWI (US)</option>
@@ -232,14 +235,6 @@
     </div>
 
     <br>
-
-    <label for="gentic_or_serology" style="margin-left: 500px;text-shadow: 2px 2px 15px white;"> <b>Input format:
-        (Genetic is the
-        default. You can change to Serology)</b></label>
-    <select id="gentic_or_serology" name="gentic_or_serology">
-        <option value="Genetic" selected="selected">Genetic (default)</option>
-        <option value="Serology">Serology</option>
-    </select>
 </form>
 <button type="submit" form="my-form" onclick="myFunction();" name="submit_btn" value="Results"
         style="background-color: #7f0a2f;width:200px;border-radius: 7px;color: white;padding: 10px 15px;text-align: center;position: relative; left:40%;font-size: 25px;">

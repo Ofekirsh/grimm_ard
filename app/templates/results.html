@@ -4,20 +4,7 @@
 <link rel="stylesheet" href="/static/results.css">
 <link rel="stylesheet" href="/static/index.css">
 <script>
-    function seeTable(divId) {        
-        /*
-        document.getElementById("haplotypes").setAttribute('hidden', "");
-        document.getElementById("haplotypes-pairs").setAttribute('hidden', "");
-        document.getElementById("genotypes").setAttribute('hidden', "");
-
-        if(divId == "geno") {
-            document.getElementById("genotypes").removeAttribute('hidden');
-        } else if (divId == "hap-s") {
-            document.getElementById("haplotypes").removeAttribute('hidden');
-        } else {
-            document.getElementById("haplotypes-pairs").removeAttribute('hidden');
-        }
-        */
+    function seeTable(divId) {
         document.getElementById("haplotypes").style.display = "none";
         document.getElementById("haplotypes-pairs").style.display = "none";
         document.getElementById("genotypes").style.display = "none";
@@ -41,7 +28,7 @@
         a = a.replaceAll(" ", "")
         a = a.replaceAll("\n", "")
         return a;
-    };
+    }
 
     function loadDataFromTable(table) {
         arr = [];
@@ -106,6 +93,36 @@
         seeTable('geno');
         seeTable('hap-p');
     }
+
+    function exportToCsv(tableName) {
+        const table = document.getElementById(tableName);
+        const rows = table.getElementsByTagName("tr");
+        let csvContent = "";
+
+        for (let i = 0; i < rows.length; i++) {
+            const rowData = [];
+            const cells = rows[i].getElementsByTagName("td");
+
+            for (let j = 0; j < cells.length; j++) {
+                rowData.push(cells[j].innerText);
+            }
+
+            csvContent += rowData.join(",") + "\n";
+        }
+
+        const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "table.csv");
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+
 </script>
 
 {% endblock %}
@@ -119,9 +136,9 @@
         <!-- ard hla: {{ ard_string }} <br>
         race: {{ imputration_race }} <br> -->
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-info margin" onclick="seeTable('geno')">Genotypes</button>
-            <button type="button" class="btn btn-info margin" onclick="seeTable('hap-s')">Haplotypes (separate)</button>
-            <button type="button" class="btn btn-info margin" onclick="seeTable('hap-p')">Haplotypes (pairs)</button>
+            <button type="button" class="btn btn-info margin border border-dark" onclick="seeTable('geno')">Genotypes</button>
+            <button type="button" class="btn btn-info margin border border-dark" onclick="seeTable('hap-s')">Haplotypes (separate)</button>
+            <button type="button" class="btn btn-info margin border border-dark" onclick="seeTable('hap-p')">Haplotypes (pairs)</button>
         </div>
     </div>
 </div>
@@ -158,7 +175,8 @@
 
 <div class="main-results">
     <div class="results-div" id="haplotypes" style="display: none;">
-        <table class="table results-table table-striped">
+        <button type="button" class="btn btn-secondary border border-dark" onclick="exportToCsv('haplotypes-table')">Export to CSV</button>
+        <table id="haplotypes-table" class="table results-table table-striped">
             <tr>
                 <th></th>
                 <th>Haplotype</th>
@@ -181,12 +199,10 @@
             {% endfor %}
         </table>
     </div>
-
     <div class="results-div" id="haplotypes-pairs">
-        <br>
+        <button type="button" class="btn btn-secondary border border-dark" onclick="exportToCsv('haplotypes-pairs-table')">Export to CSV</button>
         <div id="haplotypes-pairs-bars" class="bars-div"></div>
-        <br>
-        <table class="table results-table table-striped">
+        <table id="haplotypes-pairs-table" class="table results-table table-striped">
             <tr>
                 <th></th>
                 <th>Haplotype 1</th>
@@ -207,10 +223,9 @@
     </div>
 
     <div class="results-div" id="genotypes">
-        <br>
+        <button type="button" class="btn btn-secondary border border-dark" onclick="exportToCsv('genotype-table')">Export to CSV</button>
         <div id="genotype-bars" class="bars-div"></div>
-        <br>
-        <table class="table results-table table-striped">
+        <table id="genotype-table" class="table results-table table-striped">
             <tr>
                 <th></th>
                 <th>Genotype</th>
@@ -228,6 +243,7 @@
         </table>
     </div>
 </div>
+
 
 
 {% endblock %}

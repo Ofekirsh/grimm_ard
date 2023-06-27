@@ -58,6 +58,11 @@ def impute_form():
         race = request.form.get("race", "UNK;")[:-1]
         race_list = race.split(";")
 
+        loci = request.form.get("luci", "")[:-1]
+        if loci == "":
+            loci = "A;B;C;DRB1;DQB1;DRB3;DRB4;DRB5"
+        loci_list = loci.split(";")
+
         form_dict = request.form.to_dict()
 
         a_race = ""
@@ -71,7 +76,7 @@ def impute_form():
         is_genetic = a_race == "01"
 
         # apply the GRIM algorithm to the input data
-        genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(form_dict, race,
+        genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(form_dict, race, loci_list,
                                                                                    is_genetic=is_genetic)
 
         # render a template with the imputation results

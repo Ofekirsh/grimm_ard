@@ -3,6 +3,8 @@ import random
 import pickle
 import pyard
 from runfile import run_impute
+from reduce_loci import reduce_loci
+
 
 # define the input and output directories as constants
 INPUT_DIR = "./input_dir"
@@ -240,7 +242,7 @@ def apply_grim_file(file):
     return genotype_path, haplotype_path
 
 
-def apply_grim(alleles: dict, race, is_genetic=True):
+def apply_grim(alleles: dict, race, loci, is_genetic=True):
     """
         Applies py-ard and imputation to the given alleles and returns the resulting genotypes, haplotypes, GL string, and ARD string.
 
@@ -264,8 +266,12 @@ def apply_grim(alleles: dict, race, is_genetic=True):
                output_haplotype_path=haplotype_path, output_genotype_path=genotype_path)
     os.remove(input_path)
 
-    genotypes = read_genos(genotype_path)
-    haplotypes, haplotypes_pairs = read_haps(haplotype_path)
+    output_file_hap, output_file_muug = reduce_loci(loci, genotype_path, haplotype_path)
+    print("2")
+    genotypes = read_genos(output_file_muug)
+    print("3")
+    print(output_file_muug)
+    haplotypes, haplotypes_pairs = read_haps(output_file_hap)
     return genotypes, haplotypes, haplotypes_pairs, glstring, ard_string
 
 
