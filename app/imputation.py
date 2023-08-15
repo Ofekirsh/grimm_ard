@@ -2,15 +2,18 @@ import os
 import random
 import pickle
 import pyard
+import json
 from runfile import run_impute
+from reduce_loci import reduce_loci
+
 
 # define the input and output directories as constants
 INPUT_DIR = "./input_dir"
 OUTPUT_DIR = "./output_dir"
 
 # define the paths to the configuration file and the grim graph pickle file as constants
-PATH_TO_CONFIG = "conf_for_website.json"
-PATH_TO_GRIM_GRAPH = "grim_graph.pkl"
+PATH_TO_CONFIG = "conf_for_website_9loci.json"
+PATH_TO_GRIM_GRAPH = "graph_9.pkl"
 
 # create the input and output directories if they don't already exist
 os.makedirs(INPUT_DIR, exist_ok=True)
@@ -174,6 +177,7 @@ def apply_ard(alleles: dict, is_genetic: bool):
                           if allele in cast and val]
 
     glstring = build_glstring(my_all_alleles)
+    print(ard.redux(glstring, 'lgx'))
     return glstring, ard.redux(glstring, 'lgx')
 
 
@@ -240,7 +244,7 @@ def apply_grim_file(file):
     return genotype_path, haplotype_path
 
 
-def apply_grim(alleles: dict, race, is_genetic=True):
+def apply_grim(alleles: dict, race, loci, is_genetic=True):
     """
         Applies py-ard and imputation to the given alleles and returns the resulting genotypes, haplotypes, GL string, and ARD string.
 
@@ -264,8 +268,9 @@ def apply_grim(alleles: dict, race, is_genetic=True):
                output_haplotype_path=haplotype_path, output_genotype_path=genotype_path)
     os.remove(input_path)
 
-    genotypes = read_genos(genotype_path)
-    haplotypes, haplotypes_pairs = read_haps(haplotype_path)
+    output_file_hap, output_file_muug = reduce_loci(loci, genotype_path, haplotype_path)
+    genotypes = read_genos(output_file_muug)
+    haplotypes, haplotypes_pairs = read_haps(output_file_hap, race)
     return genotypes, haplotypes, haplotypes_pairs, glstring, ard_string
 
 
@@ -298,8 +303,8 @@ def read_genos(path):
             # hlas_and_probs[hla] = f"{float(prob):0.2e}"
 
     probs = [float(prob[2]) for prob in hlas_and_probs]
-    min_prob = min(probs)
-    max_prob = max(probs)
+    #min_prob = min(probs)
+    #max_prob = max(probs)
     sum_probs = sum(probs)
 
     for i, prob in enumerate(probs):
@@ -311,7 +316,7 @@ def read_genos(path):
     return hlas_and_probs
 
 
-def read_haps(path):
+def read_haps(path, race_str):
     """
         Reads in HLA haplotypes and probabilities from a file and returns them as a tuple of two lists.
 
@@ -334,6 +339,7 @@ def read_haps(path):
     hlas = set()
     hla_and_probs = {}
     hla_pairs = []
+    race_list = race_str.split(";")
 
     # Of course use num here to get the results of this patient
     with open(path) as f:
@@ -345,20 +351,35 @@ def read_haps(path):
             hlas.add(hla2)
             hla_pairs.append([index, hla1, hla2, f"{float(prob):0.2e}"])
 
-    haplos = [float(hap[3]) for hap in hla_pairs];
-    min_hap, max_hap = min(haplos), max(haplos)
+    haplos = [float(hap[3]) for hap in hla_pairs]
     sum_haplos = sum(haplos)
 
     for i, prob in enumerate(haplos):
         normalized = prob / sum_haplos
-        #normalized = (prob - min_hap) / (max_hap - min_hap)
         hla_pairs[i].append(f"{normalized:.3f}")
 
-    for hla in hlas:
+    conf = dict()
+    with open(PATH_TO_CONFIG, "r") as f:
+        conf = json.load(f)
+
+    populations = conf["populations"]
+
+    """for hla in hlas:
         hla_and_probs[hla] = {}
         for race, dict_ in all_freqs.items():
             if hla in dict_:
                 hla_and_probs[hla][race] = f"{dict_[hla]:0.2e}"
+            else:
+                freq = grim_graph.whole_graph.nodes[hla]["freq"][populations.index(race)]
+                hla_and_probs[hla][race] = f"{freq:0.3e}" """
+    for hla in hlas:
+        hla_and_probs[hla] = {}
+        for race, _ in all_freqs.items():
+            if hla in grim_graph.whole_graph.nodes:
+                freq = grim_graph.whole_graph.nodes[hla]["freq"][populations.index(race)]
+                hla_and_probs[hla][race] = f"{freq:0.3e}"
+            else:
+                hla_and_probs[hla][race] = 0
 
-    # os.remove(path)
+                # os.remove(path)
     return hla_and_probs, hla_pairs

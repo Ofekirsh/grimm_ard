@@ -58,6 +58,17 @@ def impute_form():
         race = request.form.get("race", "UNK;")[:-1]
         race_list = race.split(";")
 
+        loci = request.form.get("luci", "")[:-1]
+        # If user hasn't entered any loci, choose all.
+        if loci == "":
+            loci = "A;B;C;DRB1;DQB1;DRB3;DRB4;DRB5;DRBX;DPB1;DPA1;DQA1"
+        # Split the string into a list.
+        loci_list = loci.split(";")
+        # If DRB3/4/5 has been selected, replace it with ["DRB3", "DRB4", "DRB5"].
+        if "DRB3/4/5" in loci_list:
+            loci_list.remove("DRB3/4/5")
+            loci_list += ["DRB3", "DRB4", "DRB5", "DRBX"]
+
         form_dict = request.form.to_dict()
 
         a_race = ""
@@ -71,7 +82,7 @@ def impute_form():
         is_genetic = a_race == "01"
 
         # apply the GRIM algorithm to the input data
-        genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(form_dict, race,
+        genotypes, haplotypes, haplotypes_pairs, glstring, ard_string = apply_grim(form_dict, race, loci_list,
                                                                                    is_genetic=is_genetic)
 
         # render a template with the imputation results
@@ -139,7 +150,6 @@ def help():
 @app.route('/About', methods=['GET'])
 def about():
     return render_template("about.html", active="About")
-
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=True)
