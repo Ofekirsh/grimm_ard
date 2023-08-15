@@ -269,8 +269,15 @@ def apply_grim(alleles: dict, race, loci, is_genetic=True):
     os.remove(input_path)
 
     output_file_hap, output_file_muug = reduce_loci(loci, genotype_path, haplotype_path)
+
     genotypes = read_genos(output_file_muug)
     haplotypes, haplotypes_pairs = read_haps(output_file_hap, race)
+
+    # print("2")
+    # genotypes = read_genos(output_file_muug)
+    # print("3")
+    # print(output_file_muug)
+    # haplotypes, haplotypes_pairs = read_haps(output_file_hap)
     return genotypes, haplotypes, haplotypes_pairs, glstring, ard_string
 
 
