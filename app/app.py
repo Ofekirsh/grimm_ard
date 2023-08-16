@@ -59,7 +59,6 @@ def impute_form():
         race_list = race.split(";")
 
         loci = request.form.get("luci", "")[:-1]
-
         # If user hasn't entered any loci, choose all.
         if loci == "":
             loci = "A;B;C;DRB1;DQB1;DRB3;DRB4;DRB5;DRBX;DPB1;DPA1;DQA1"
@@ -69,10 +68,6 @@ def impute_form():
         if "DRB3/4/5" in loci_list:
             loci_list.remove("DRB3/4/5")
             loci_list += ["DRB3", "DRB4", "DRB5", "DRBX"]
-
-        # if loci == "":
-        #     loci = "A;B;C;DRB1;DQB1;DRB3;DRB4;DRB5"
-        # loci_list = loci.split(";")
 
         form_dict = request.form.to_dict()
 
