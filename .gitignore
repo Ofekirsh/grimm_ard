@@ -1,3 +1,4 @@
 *.pkl
 *.freqs
 *.freqs.gz
+.idea/
